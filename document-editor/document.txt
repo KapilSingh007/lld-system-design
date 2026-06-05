@@ -1,0 +1,3 @@
+hello world
+[Image: this_is_basic_document_image.png]
+finish
