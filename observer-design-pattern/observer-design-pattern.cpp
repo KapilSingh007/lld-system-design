@@ -3,88 +3,77 @@
 using namespace std;
 
 class ISubscriber {
-    public:
-    virtual void update() = 0;
+
 };
 
 class IChannel {
     public:
     virtual void subscribe(ISubscriber *subscriber) = 0;
     virtual void unSubscribe(ISubscriber *subscriber) = 0;
-    virtual void notifySubscribers() = 0;
-
+    virtual void notify() = 0;
+    virtual void addVideo(string name) = 0;
+    virtual string getLatestVideo(string name) = 0;
 };
 
+class Channel {
 
-class Channel: public IChannel {
-    private: 
     vector<ISubscriber*> subscribers;
-    string newVideo,name;
-    
-
+    string name;
+    string latestVideo;
     public:
     Channel(string name){
         this->name = name;
     }
+
     void subscribe(ISubscriber *subscriber) override {
         subscribers.push_back(subscriber);
     }
-
     void unSubscribe(ISubscriber *subscriber) override {
-        if(!subscribers.empty()){
-            auto x = find(subscribers.begin(),subscribers.end(),subscriber);
-            subscribers.erase(x);
+        auto index = find(subscribers.begin(),subscribers.end(),subscriber);
+        subscribers.erase(index);
+    }
+
+    void notify() override {
+        for(auto subscriber: subscribers){
+            subscriber->notify();
         }
     }
 
-    void notifySubscribers() override{
-        for(auto x: subscribers) {
-            x->update();
-        }
+    void addVideo(string name) override {
+        latestVideo = name;
+        notify();
     }
 
-    void uploadVideo(string newVideoTitle){
-        newVideo = newVideoTitle;
-        notifySubscribers();
+    string getLatestVideo() override {
+        return "Checkout our new video " + latestVideo;
     }
-
-    string getLatestVideo(){
-        return "Checkout our new video " + newVideo;
-    }
-
-
 };
 
-class Subscriber: public ISubscriber {
-
-    Channel *channel;
+class Subscriber {
     string name;
-
     public:
-    Subscriber(string name,Channel *channel) {
-        this->channel = channel;
+
+    Subscriber(string name){
         this->name = name;
     }
 
-    void update() override {
-        cout<<"hey " + name + " , " + channel->getLatestVideo() + "\n";
+    string notify(){
+        
     }
+}
 
-};
-int main() {
+int main(){
 
-    Channel *channel = new Channel("Kapil");
+    IChannel *mrBeast = new Channel("Mr beast");
+    IChannel *harry = new Channel("codewithharry");
 
-    ISubscriber *sub1 = new Subscriber("Varun",channel);
-    ISubscriber *sub2 = new Subscriber("Arjun",channel);
+    ISubscriber *sub1 = new Subscriber("kapil");
 
-
-    channel->subscribe(sub1);
-    channel->subscribe(sub2);
+    mrBeast.subscribe(sub1);
+    harry.subscribe(sub1);
 
 
-    channel->uploadVideo("video 1");
-    channel->unSubscribe(sub1);
-    channel->uploadVideo("video 2");
+    mrBeast.addVideo("video1 added");
+
     return 0;
 }
