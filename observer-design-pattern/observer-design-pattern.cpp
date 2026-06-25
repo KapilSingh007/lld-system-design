@@ -3,7 +3,8 @@
 using namespace std;
 
 class ISubscriber {
-
+    public:
+    virtual void notify(string videoInfo) = 0;
 };
 
 class IChannel {
@@ -12,10 +13,9 @@ class IChannel {
     virtual void unSubscribe(ISubscriber *subscriber) = 0;
     virtual void notify() = 0;
     virtual void addVideo(string name) = 0;
-    virtual string getLatestVideo(string name) = 0;
 };
 
-class Channel {
+class Channel: public IChannel {
 
     vector<ISubscriber*> subscribers;
     string name;
@@ -35,7 +35,7 @@ class Channel {
 
     void notify() override {
         for(auto subscriber: subscribers){
-            subscriber->notify();
+            subscriber->notify(latestVideo);
         }
     }
 
@@ -43,13 +43,9 @@ class Channel {
         latestVideo = name;
         notify();
     }
-
-    string getLatestVideo() override {
-        return "Checkout our new video " + latestVideo;
-    }
 };
 
-class Subscriber {
+class Subscriber: public ISubscriber {
     string name;
     public:
 
@@ -57,10 +53,10 @@ class Subscriber {
         this->name = name;
     }
 
-    string notify(){
-        
+    void notify(string videoInfo) override {
+        cout<< "Checkout our new video " + videoInfo<<endl;
     }
-}
+};
 
 int main(){
 
@@ -69,11 +65,11 @@ int main(){
 
     ISubscriber *sub1 = new Subscriber("kapil");
 
-    mrBeast.subscribe(sub1);
-    harry.subscribe(sub1);
+    mrBeast->subscribe(sub1);
+    harry->subscribe(sub1);
 
 
-    mrBeast.addVideo("video1 added");
+    mrBeast->addVideo("video1 added");
 
     return 0;
 }
