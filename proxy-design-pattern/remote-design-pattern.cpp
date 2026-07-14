@@ -21,11 +21,10 @@ class ProxyDataService: public IDataFetch{
     IDataFetch* data;
 
     public:
-
+    ProxyDataService(){
+        data = new RealDataService();
+    }
     void fetch() override {
-        if(!data){
-            data = new RealDataService();
-        }
         data->fetch();
     }
 
