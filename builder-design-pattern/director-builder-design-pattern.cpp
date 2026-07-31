@@ -81,6 +81,27 @@ class HttpRequestBuilder{
         return req;
     }
 };
+
+class HttpRequestDirector{
+    public:
+     static HttpRequest createGetRequest(const string& url) {
+        return HttpRequestBuilder()
+                .withUrl(url)
+                .withMethod("GET")
+                .build();
+    }
+
+    // Creates a JSON POST request
+    static HttpRequest createJsonPostRequest(const string& url, const string& jsonBody) {
+        return HttpRequestBuilder()
+            .withUrl(url)
+            .withMethod("POST")
+            .withHeader("Content-Type", "application/json")
+            .withHeader("Accept", "application/json")
+            .withBody(jsonBody)
+            .build();
+    }
+};
 int main(){
     HttpRequest request = HttpRequestBuilder()
         .withUrl("https://api.example.com")
@@ -93,5 +114,10 @@ int main(){
         .build();
 
     request.execute(); 
+ cout <<"\n----------------------------\n";
+
+    HttpRequest request2 = HttpRequestDirector::createGetRequest("https://api.example.com/users");
+    request2.execute();
     return 0;
+
 }
